@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DVB Technologies | Apex Metropolis Unbound v20.0</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; font-family: 'Impact', 'Arial Black', sans-serif; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background: #020306; color: #fff; }
+        
+        /* 🏎️ Gelişmiş Siber Yarış HUD Sistemi */
+        #game-hud { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; pointer-events: none; z-index: 99; font-style: italic; }
+        .hud-panel { background: rgba(4, 7, 20, 0.95); padding: 12px 24px; border-radius: 14px; border: 2px solid #10b981; box-shadow: 0 0 25px rgba(16,185,129,0.4); min-width: 140px; text-align: center; }
+        .nitro-bar-container { width: 100%; background: #1e293b; height: 6px; border-radius: 3px; margin-top: 5px; overflow: hidden; }
+        #nitro-fill { width: 100%; background: #38bdf8; height: 100%; transition: width 0.1s; }
+        
+        /* 🛠️ Devasa Kurumsal Garaj & Modifiye Arayüzü */
+        #garage-menu { position: absolute; inset: 0; background: radial-gradient(circle, #0b0f19 0%, #020305 100%); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 30px 20px; overflow-y: auto; }
+        #garage-menu h1 { color: #10b981; font-size: 38px; letter-spacing: 3px; text-transform: uppercase; text-shadow: 0 0 25px rgba(16,185,129,0.6); margin-bottom: 2px; text-align: center; }
+        .garage-subtitle { font-size: 12px; color: #facc15; font-weight: bold; margin-bottom: 30px; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .setup-container { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 15px; }
+        .setup-group { background: rgba(15, 23, 42, 0.85); border: 2px solid #1e293b; padding: 16px; border-radius: 16px; transition: border-color 0.3s; }
+        .setup-group:hover { border-color: #10b981; }
+        .setup-title { font-size: 14px; color: #94a3b8; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .color-options { display: flex; gap: 12px; justify-content: center; }
+        .color-btn { width: 38px; height: 38px; border-radius: 50%; border: 3px solid #fff; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .color-btn:active { transform: scale(1.15); }
+        
+        .select-row { display: flex; gap: 10px; width: 100%; }
+        .select-btn { flex: 1; background: #0f172a; border: 2px solid #334155; color: #94a3b8; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: bold; text-transform: uppercase; }
+        .select-btn.active { border-color: #38bdf8; color: #fff; background: #1e3a8a; }
+
+        #canvas-viewport { width: 100%; height: 62vh; display: block; background: #000; border-bottom: 4px solid #10b981; }
+        
+        /* 🕹️ Mobil Sürüş Kokpit Mekanizması */
+        #steering-deck { height: 38vh; background: linear-gradient(180deg, #030408 0%, #080c1e 100%); display: flex; justify-content: space-around; align-items: center; padding: 15px; border-top: 2px solid #1e293b; }
+        .deck-column { display: flex; flex-direction: column; gap: 14px; width: 46%; }
+        .drive-btn { background: linear-gradient(180deg, #0f142c 0%, #060814 100%); border: 3px solid #10b981; color: white; border-radius: 22px; padding: 24px; font-size: 16px; font-weight: bold; font-style: italic; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 6px 20px rgba(0,0,0,0.6); -webkit-tap-highlight-color: transparent; }
+        .drive-btn:active { background: #10b981; color: #000; box-shadow: 0 0 25px #10b981; transform: scale(0.94); }
+        #btn-drift { border-color: #ef4444; color: #ef4444; }
+        #btn-drift:active { background: #ef4444; color: #fff; box-shadow: 0 0 25px #ef4444; }
+        
+        .start-btn { background: linear-gradient(90deg, #10b981 0%, #059669 100%); color: #000; padding: 18px; font-size: 24px; border: none; border-radius: 16px; font-weight: bold; width: 100%; max-width: 500px; text-transform: uppercase; box-shadow: 0 0 35px rgba(16,185,129,0.5); margin-top: 15px; letter-spacing: 1px; }
+        .start-btn:active { transform: scale(0.97); opacity: 0.9; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+
+    <div id="garage-menu">
+        <h1>🟢 DVB TECHNOLOGIES</h1>
+        <div class="garage-subtitle">Metropolis Apex Engine v20.0</div>
+        
+        <div class="setup-container">
+            <div class="setup-group">
+                <div class="setup-title">🎨 Metalik Gövde Boyası Seç patron:</div>
+                <div class="color-options">
+                    <div class="color-btn" style="background: #ef4444; box-shadow: 0 0 10px #ef4444;" onclick="setBodyColor(0xef4444)"></div>
+                    <div class="color-btn" style="background: #10b981; box-shadow: 0 0 10px #10b981;" onclick="setBodyColor(0x10b981)"></div>
+                    <div class="color-btn" style="background: #38bdf8; box-shadow: 0 0 10px #38bdf8;" onclick="setBodyColor(0x38bdf8)"></div>
+                    <div class="color-btn" style="background: #facc15; box-shadow: 0 0 10px #facc15;" onclick="setBodyColor(0xfacc15)"></div>
+                    <div class="color-btn" style="background: #1e1b4b; box-shadow: 0 0 10px #1e1b4b;" onclick="setBodyColor(0x1e1b4b)"></div>
+                </div>
+            </div>
+
+            <div class="setup-group">
+                <div class="setup-title">🟢 Alt Neon Kit Modeli (Underglow):</div>
+                <div class="color-options">
+                    <div class="color-btn" style="background: #10b981;" onclick="setNeonColor(0x10b981)"></div>
+                    <div class="color-btn" style="background: #ef4444;" onclick="setNeonColor(0xef4444)"></div>
+                    <div class="color-btn" style="background: #38bdf8;" onclick="setNeonColor(0x38bdf8)"></div>
+                    <div class="color-btn" style="background: #a855f7;" onclick="setNeonColor(0xa855f7)"></div>
+                </div>
+            </div>
+
+            <div class="setup-group">
+                <div class="setup-title">🏎️ Karbon Arka Kanat (Spoiler) Modeli:</div>
+                <div class="select-row">
+                    <button class="select-btn active" id="sp-1" onclick="setSpoilerType(1)">STREET V1</button>
+                    <button class="select-btn" id="sp-2" onclick="setSpoilerType(2)">YARIŞ PRO V2</button>
+                    <button class="select-btn" id="sp-3" onclick="setSpoilerType(3)">DRAG GT V3</button>
+                </div>
+            </div>
+        </div>
+
+        <button class="start-btn" onclick="triggerRaceStart()">PİSTE ÇIK GAZZLA AMK 🏁</button>
+    </div>
+
+    <div id="game-hud" style="display: none;">
+        <div class="hud-panel" style="color: #10b981;">🏆 POS: <span id="hud-pos">1</span>/5</div>
+        <div class="hud-panel" style="color: #facc15; font-size: 20px;">🏎️ <span id="hud-speed">0</span> KM/H</div>
+        <div class="hud-panel" style="color: #38bdf8;">
+            ⚡ NITRO
+            <div class="nitro-bar-container"><div id="nitro-fill"></div></div>
+        </div>
+    </div>
+
+    <div id="canvas-viewport"></div>
+
+    <div id="steering-deck">
+        <div class="deck-column">
+            <button class="drive-btn" id="btn-left">◀ SOLA KIR</button>
+            <button class="drive-btn" id="btn-right">SAĞA KIR ▶</button>
+        </div>
+        <div class="deck-column">
+            <button class="drive-btn" id="btn-gas" style="border-color: #38bdf8; color: #38bdf8;">KÖKLE GAZI ▲</button>
+            <button class="drive-btn" id="btn-drift">EL FRENİ DRIFT ▼</button>
+        </div>
+    </div>
+
+    <script>
+        // ========================================================
+        // 🔊 HARBİ SES MOTORU YAZILIMI (SYNTHESIZED WEB AUDIO API) amk!
+        // ========================================================
+        let audioCtx, motorOsc, motorGain, skidOsc, skidGain;
+        
+        function initUltimateSfx() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Ana Motor Sesi Sentezleyici
+                motorOsc = audioCtx.createOscillator();
+                motorGain = audioCtx.createGain();
+                motorOsc.type = 'sawtooth';
+                motorOsc.frequency.setValueAtTime(50, audioCtx.currentTime);
+                motorGain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+                motorOsc.connect(motorGain);
+                motorGain.connect(audioCtx.destination);
+                motorOsc.start();
+
+                // Lastik Çığlığı (Drift Sesi) Sentezleyici amk
+                skidOsc = audioCtx.createOscillator();
+                skidGain = audioCtx.createGain();
+                skidOsc.type = 'triangle';
+                skidOsc.frequency.setValueAtTime(380, audioCtx.currentTime);
+                skidGain.gain.setValueAtTime(0, audioCtx.currentTime); // Başta sessiz
+                skidOsc.connect(skidGain);
+                skidGain.connect(audioCtx.destination);
+                skidOsc.start();
+            } catch(e) { console.log("Ses donanımı başlatılamadı."); }
+        }
+
+        function runSfxLogic(speed, isDrifting) {
+            if(!audioCtx) return;
+            // Motor devir sesi ayarı patron amk
+            let targetPitch = 50 + (Math.abs(speed) * 45);
+            motorOsc.frequency.setValueAtTime(targetPitch, audioCtx.currentTime);
+
+            // Drift sesi ayarı
+            if(isDrifting && Math.abs(speed) > 1.5) {
+                skidGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+            } else {
+                skidGain.gain.setValueAtTime(0, audioCtx.currentTime);
+            }
+        }
+
+        function playImpactSfx() {
+            if(!audioCtx) return;
+            let impOsc = audioCtx.createOscillator();
+            let impGain = audioCtx.createGain();
+            impOsc.type = 'sawtooth';
+            impOsc.frequency.setValueAtTime(90, audioCtx.currentTime);
+            impGain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+            impGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            impOsc.connect(impGain); impGain.connect(audioCtx.destination);
+            impOsc.start(); impOsc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        // ========================================================
+        // 🌌 3D MATRIX SAHNE VE IŞIK MATERYAL YÖNETİMİ amk
+        // ========================================================
+        const viewContainer = document.getElementById('canvas-viewport');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x010204);
+        scene.fog = new THREE.FogExp2(0x010204, 0.014); // Gerçekçi sokak sisi amk
+
+        const camera = new THREE.PerspectiveCamera(62, viewContainer.clientWidth / viewContainer.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+        renderer.setSize(viewContainer.clientWidth, viewContainer.clientHeight);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; // HDR Kupa grafik ayarı!
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        viewContainer.appendChild(renderer.domElement);
+
+        // Gece Neon Işıkları Matrisi
+        scene.add(new THREE.AmbientLight(0x1e2235, 0.6));
+        const skyLight = new THREE.DirectionalLight(0x38bdf8, 0.95);
+        skyLight.position.set(20, 80, 20);
+        scene.add(skyLight);
+        const groundNeonLight = new THREE.DirectionalLight(0x10b981, 0.4);
+        groundNeonLight.position.set(-20, 40, -20);
+        scene.add(groundNeonLight);
+
+        // Garaj Hafıza Kartları
+        let config = { bodyColor: 0xef4444, neonColor: 0x10b981, spoiler: 1 };
+
+        function setBodyColor(hex) { config.bodyColor = hex; compilePlayerModel(); }
+        function setNeonColor(hex) { config.neonColor = hex; compilePlayerModel(); }
+        function setSpoilerType(type) {
+            config.spoiler = type;
+            for(let i=1; i<=3; i++) document.getElementById('sp-'+i).classList.remove('active');
+            document.getElementById('sp-'+type).classList.add('active');
+            compilePlayerModel();
+        }
+
+        // ========================================================
+        // 🏎️ DETAYLI ARABA MİMARİSİ (SIFIRDAN POLİGON ENJEKSİYONU)
+        // ========================================================
+        let playerCarGroup = new THREE.Group();
+        scene.add(playerCarGroup);
+        let playerTires = [];
+
+        function compilePlayerModel() {
+            // Eskiyi erit temizle amk
+            while(playerCarGroup.children.length > 0) { playerCarGroup.remove(playerCarGroup.children[0]); }
+            playerTires = [];
+
+            // 1. Parlayan Zemin Alt Neon Plakası
+            let neonKit = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.02, 4.6), new THREE.MeshBasicMaterial({ color: config.neonColor }));
+            neonKit.position.y = 0.04;
+            playerCarGroup.add(neonKit);
+
+            // 2. Kaporta Gövdesi (Alaşım Cilalı Premium Metalik)
+            let bodyMat = new THREE.MeshPhysicalMaterial({ color: config.bodyColor, metalness: 0.95, roughness: 0.08, clearcoat: 1.0, clearcoatRoughness: 0.05 });
+            let body = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.65, 4.4), bodyMat);
+            body.position.y = 0.48;
+            playerCarGroup.add(body);
+
+            // 3. Karbon Cam Yapısı
+            let glassMat = new THREE.MeshPhysicalMaterial({ color: 0x07080c, roughness: 0.02, transmission: 0.5, thickness: 0.2 });
+            let glass = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.45, 2.0), glassMat);
+            glass.position.set(0, 0.88, -0.2);
+            playerCarGroup.add(glass);
+
+            // 4. Dinamik Rüzgarlık (Spoiler) İstasyonu amk
+            let spoilerGroup = new THREE.Group();
+            spoilerGroup.position.set(0, 0.8, -1.9);
+            
+            let legM = new THREE.MeshStandardMaterial({ color: 0x000, roughness: 0.5 });
+            let wingM = new THREE.MeshPhysicalMaterial({ color: config.bodyColor, metalness: 0.8 });
+
+            if(config.spoiler === 1) {
+                let sLeg = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.3, 0.1), legM);
+                let sWing = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.04, 0.5), wingM);
+                sWing.position.y = 0.2; spoilerGroup.add(sLeg, sWing);
+            } else if(config.spoiler === 2) {
+                let lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.4, 0.1), legM); lLeg.position.x = -0.7;
+                let rLeg = lLeg.clone(); rLeg.position.x = 0.7;
+                let sWing = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.05, 0.6), wingM);
+                sWing.position.y = 0.4; sWing.rotation.x = 0.05; spoilerGroup.add(lLeg, rLeg, sWing);
+            } else {
+                let lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.2), legM); lLeg.position.x = -0.8;
+                let rLeg = lLeg.clone(); rLeg.position.x = 0.8;
+                let sWing = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.06, 0.7), new THREE.MeshPhysicalMaterial({ color: 0x111, metalness: 1.0 }));
+                sWing.position.y = 0.5; spoilerGroup.add(lLeg, rLeg, sWing);
+            }
+            playerCarGroup.add(spoilerGroup);
+
+            // 5. Geniş Taban Lastikler ve Krom Jant Seti
+            let tGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.46, 18);
+            let tMat = new THREE.MeshPhysicalMaterial({ color: 0x09090b, roughness: 0.95 });
+            let rMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 1.0, roughness: 0.05 }); // Ultra parlak krom jant amk
+
+            let wheelCoords = [[-1.18, 0.35, 1.35], [1.18, 0.35, 1.35], [-1.18, 0.35, -1.35], [1.18, 0.35, -1.35]];
+            wheelCoords.forEach(pos => {
+                let wG = new THREE.Group();
+                let tireMesh = new THREE.Mesh(tGeo, tMat); tireMesh.rotation.z = Math.PI / 2;
+                let rimMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.49, 12), rMat); rimMesh.rotation.z = Math.PI / 2;
+                wG.add(tireMesh, rimMesh);
+                wG.position.set(pos[0], pos[1], pos[2]);
+                playerCarGroup.add(wG);
+                playerTires.push(wG);
+            });
+        }
+
+        // Modeli inşa et patron
+        compilePlayerModel();
+
+        // ========================================================
+        // AI YAPAY ZEKALI RAKİP TAKIMI (4 GERÇEKÇİ RAKİP) amk!
+        // ========================================================
+        let aiRacerPool = [];
+        const aiColorHex = [0x38bdf8, 0xfacc15, 0xa855f7, 0xec4899];
+
+        function deployAiCompetitors() {
+            aiRacerPool.forEach(ai => scene.remove(ai.mesh));
+            aiRacerPool = [];
+
+            for(let i=0; i<4; i++) {
+                let aiGroup = new THREE.Group();
+                
+                let aiBody = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.65, 4.4), new THREE.MeshPhysicalMaterial({ color: aiColorHex[i], metalness: 0.8 }));
+                aiBody.position.y = 0.48; aiGroup.add(aiBody);
+                let aiGlass = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.4, 2), new THREE.MeshStandardMaterial({ color: 0x000 }));
+                aiGlass.position.set(0, 0.85, -0.2); aiGroup.add(aiGlass);
+
+                scene.add(aiGroup);
+                
+                aiRacerPool.push({
+                    mesh: aiGroup,
+                    x: (i - 1.5) * 6.8, // Pist kulvarları dağılımı amk
+                    z: 50 + (i * 22),
+                    speed: 2.4 + (Math.random() * 0.7),
+                    angle: 0,
+                    trackOffset: (Math.random() - 0.5) * 5.5
+                });
+            }
+        }
+
+        // ========================================================
+        // 🌌 METROPOLİS GECE HARİTASI VE OTOBAN GRIDLERI amk
+        // ========================================================
+        const dynamicRoadGrid = new THREE.GridHelper(2600, 180, 0x10b981, 0x181e2f); // Şanlı yeşil otoban şeritleri patron!
+        dynamicRoadGrid.position.y = 0.01;
+        scene.add(dynamicRoadGrid);
+
+        // Gökdelen Blokları Konsept Enjeksiyonu
+        for(let i=0; i<160; i++) {
+            let tall = Math.random() * 85 + 35;
+            let bMesh = new THREE.Mesh(new THREE.BoxGeometry(24, tall, 24), new THREE.MeshPhysicalMaterial({ color: 0x04060a, metalness: 0.4, roughness: 0.5 }));
+            
+            let bx = (Math.random() - 0.5) * 650;
+            if(Math.abs(bx) < 32) bx += bx > 0 ? 32 : -32; // Arabanın üstüne gökdelen dikme amk
+            let bz = (Math.random() - 0.5) * 900;
+
+            bMesh.position.set(bx, tall/2, bz);
+            scene.add(bMesh);
+        }
+
+        // Gelişmiş Duman Efekt Parçacıkları Sistemi
+        let smokeParticles = [];
+        function createDriftSmokeParticle(x, z) {
+            let pM = new THREE.Mesh(new THREE.SphereGeometry(0.24, 4, 4), new THREE.MeshBasicMaterial({ color: 0x4b5563, transparent: true, opacity: 0.45 }));
+            pM.position.set(x, 0.15, z); scene.add(pM);
+            smokeParticles.push({ mesh: pM, life: 1.0 });
+        }
+
+        // ========================================================
+        // 🛠️ FİZİK MOTORU VE MATEMATİK MATRİS DENKLEMİ amk!
+        // ========================================================
+        let state = { speed: 0, maxSpeed: 6.2, accel: 0.14, friction: 0.045, steer: 0.05, angle: 0, nitro: 100 };
+        let activeKeys = { left: false, right: false, gas: false, drift: false };
+
+        function initControls(id, mapping) {
+            const buttonEl = documen
